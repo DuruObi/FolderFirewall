@@ -1,0 +1,10 @@
+* [33mecd494d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Fix: improved snapshot_clone.sh with better error handling and safer passphrase handling
+* [33m2cee3c8[m Add prototype backend app + helper scripts + run instructions
+* [33m0a55e7c[m Update and rename .keep to create_sample_files.sh
+* [33m0d62d9c[m Update and rename .keep to app.py
+* [33m7548648[m Create architecture.md
+* [33mf2afe41[m Added initial architecture blueprint
+* [33mc6a16c6[m Added base folder structure with .keep files
+* [33mfbab382[m Create .gitignore
+* [33m7b52bc0[m Create LICENSE (MIT License – recommended for open-source)
+* [33m6b8e039[m Create README.md
