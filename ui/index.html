@@ -1,1 +1,43 @@
+<<<<<<< HEAD
 ...paste index.html content...
+=======
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>FolderFirewall – UI</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="center">
+    <div id="folder" class="folder">
+      <div class="tab"></div>
+      <div class="label">FolderFirewall</div>
+    </div>
+
+    <div id="app" class="app hidden">
+      <h2>This folder is protected. Choose an option:</h2>
+      <div class="buttons">
+        <button id="btn-start">Start Secure Clone</button>
+        <button id="btn-manage">Manage Files</button>
+        <button id="btn-list">List Clones</button>
+      </div>
+
+      <div id="output" class="output"></div>
+
+      <div id="manage" class="hidden">
+        <h3>Manage Files (Basic)</h3>
+        <select id="clones-select"></select>
+        <input id="pass" placeholder="Snapshot passphrase (optional)" />
+        <button id="btn-snapshot">Snapshot Selected Clone</button>
+      </div>
+
+      <button id="back" class="back hidden">Back</button>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
+>>>>>>> origin/main

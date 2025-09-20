@@ -1,1 +1,17 @@
+<<<<<<< HEAD
 { "name": "folderfirewall-ui", "version": "0.1.0", "description": "Electron UI for FolderFirewall prototype", "main": "main.js", "scripts": { "start": "electron .", "pack": "electron-packager . FolderFirewall --overwrite --out dist" }, "devDependencies": { "electron": "^26.0.0" } }
+=======
+{
+  "name": "folderfirewall-ui",
+  "version": "0.1.0",
+  "description": "Electron UI for FolderFirewall prototype",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-packager . FolderFirewall --overwrite --out dist"
+  },
+  "devDependencies": {
+    "electron": "^26.0.0"
+  }
+}
+>>>>>>> origin/main
