@@ -9,7 +9,7 @@
   },
     {
       "name": "Run FolderFirewall Backend",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/backend/app.py",
       "console": "integratedTerminal"
