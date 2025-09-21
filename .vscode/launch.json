@@ -1,17 +1,19 @@
 {
   "version": "0.2.0",
   "configurations": [
-  {
-    "command": "npm start",
-    "name": "Run npm start",
-    "request": "launch",
-    "type": "node-terminal"
-  },
     {
       "name": "Run FolderFirewall Backend",
-      "type": "debugpy",
+      "type": "python",
       "request": "launch",
       "program": "${workspaceFolder}/backend/app.py",
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Run Snapshot Clone Script",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/bin/bash",
+      "args": ["${workspaceFolder}/scripts/snapshot_clone.sh"],
       "console": "integratedTerminal"
     }
   ]
