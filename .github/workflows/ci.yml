@@ -28,3 +28,4 @@ jobs:
         run: pip install pytest argon2-cffi cryptography keyring
       - name: Run tests
         run: pytest -q || true
+

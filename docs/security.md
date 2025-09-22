@@ -1,4 +1,16 @@
 # FolderFirewall — Security notes & usage
+## Overview
+This explains the Linux-first secure clone flow: LUKS encrypted image + rootless container + encrypted snapshots.
+## Important caveats
+- Host kernel compromises limit guarantees.
+- LUKS passphrases are entered interactively.
+- The seccomp profile is starter-only and must be hardened.
+## Quick install
+sudo apt update
+sudo apt install -y cryptsetup podman tar openssl python3-pip
+pip3 install argon2-cffi cryptography keyring
+
+# FolderFirewall — Security notes & usage
 
 ## Overview
 This document covers the Linux-first secure clone flow implemented by the scripts in this repo.
