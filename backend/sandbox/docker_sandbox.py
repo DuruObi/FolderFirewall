@@ -1,25 +1,40 @@
 # backend/sandbox/docker_sandbox.py
 import docker
+import uuid
 
 class DockerSandbox:
     def __init__(self):
         self.client = docker.from_env()
+        self.containers = {}
 
-    def start_container(self, image="alpine:latest", command="sleep 3600"):
-        """Start a new Docker container for a session."""
+    def start_container(self, image="ubuntu:22.04"):
+        container_name = f"sandbox-{uuid.uuid4().hex[:8]}"
         container = self.client.containers.run(
             image,
-            command,
+            name=container_name,
             detach=True,
-            tty=True
+            tty=True,
+            stdin_open=True,
+            command="/bin/bash",
         )
-        return container
+        self.containers[container.id] = container
+        return container.id, container_name
 
     def stop_container(self, container_id):
-        """Stop and remove a container by its ID."""
-        try:
-            container = self.client.containers.get(container_id)
+        container = self.containers.get(container_id)
+        if container:
             container.stop()
             container.remove()
-        except Exception as e:
-            print(f"[DockerSandbox] Error stopping container {container_id}: {e}")
+            del self.containers[container_id]
+            return True
+        return False
+
+    def list_containers(self):
+        return [
+            {
+                "id": cid,
+                "name": cont.name,
+                "status": cont.status,
+            }
+            for cid, cont in self.containers.items()
+        ]
