@@ -1,11 +1,10 @@
+# backend/app.py
 from fastapi import FastAPI, HTTPException
-import sessions              # in-memory + Docker session wrapper
 from core.session_manager import SessionManager
-from sandbox.docker_sandbox import DockerSandbox
 
 app = FastAPI(title="FolderFirewall API")
 
-# Initialize Docker session manager
+# Initialize session manager
 session_manager = SessionManager()
 
 @app.post("/session/start")
