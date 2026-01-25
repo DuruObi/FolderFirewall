@@ -1,24 +1,24 @@
 # backend/app.py
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from core.session_manager import SessionManager
 
-app = FastAPI(title="FolderFirewall API")
-
-# Initialize session manager
-session_manager = SessionManager()
+app = FastAPI()
+manager = SessionManager()
 
 @app.post("/session/start")
-def start():
-    session = session_manager.start_session()
-    return {"message": "Session started", "session": session}
+def start_session():
+    session_id, info = manager.start_session()
+    return JSONResponse({"session_id": session_id, "info": info})
 
 @app.post("/session/stop/{session_id}")
-def stop(session_id: str):
-    session = session_manager.stop_session(session_id)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return {"message": "Session stopped", "session": session}
+def stop_session(session_id: str):
+    success = manager.stop_session(session_id)
+    if success:
+        return {"status": "stopped", "session_id": session_id}
+    return JSONResponse({"error": "session not found"}, status_code=404)
 
 @app.get("/session/list")
-def get_sessions():
-    return {"sessions": session_manager.list_sessions()}
+def list_sessions():
+    sessions = manager.list_sessions()
+    return {"sessions": sessions}
