@@ -14,4 +14,7 @@
     "electron": "^26.0.0"
   }
 }
+"scripts": {
+  "start": "electron ."
+}
 >>>>>>> origin/main
