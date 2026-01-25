@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from sessions import start_session
+import sessions
 
 app = FastAPI(title="FolderFirewall API")
 
 @app.post("/session/start")
 def start():
-    session = start_session()
+    session = sessions.start_session()
     return {
         "message": "Session started",
         "session": session
