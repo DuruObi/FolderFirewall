@@ -1,11 +1,19 @@
-<<<<<<< HEAD
-...paste preload.js content...
-=======
-const { contextBridge, ipcRenderer } = require('electron');
+// ui/preload.js
+const { contextBridge } = require('electron');
 
-contextBridge.exposeInMainWorld('ffapi', {
-  startClone: () => ipcRenderer.invoke('backend:start-clone'),
-  listClones: () => ipcRenderer.invoke('backend:list-clones'),
-  snapshotClone: (name, pass) => ipcRenderer.invoke('backend:snapshot-clone', name, pass)
+const API_URL = 'http://127.0.0.1:8000';
+
+contextBridge.exposeInMainWorld('api', {
+  startSession: async () => {
+    const res = await fetch(`${API_URL}/session/start`, { method: 'POST' });
+    return res.json();
+  },
+  stopSession: async (id) => {
+    const res = await fetch(`${API_URL}/session/stop/${id}`, { method: 'POST' });
+    return res.json();
+  },
+  listSessions: async () => {
+    const res = await fetch(`${API_URL}/session/list`);
+    return res.json();
+  },
 });
->>>>>>> origin/main
