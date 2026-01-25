@@ -1,18 +1,39 @@
-<<<<<<< HEAD
-...paste styles.css content...
-=======
-body { background:#0f1720; color:#dfe7ee; font-family: Inter, Roboto, sans-serif; margin:0; }
-.center { display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding:30px; }
-.folder { width:220px; height:120px; background:#ffd966; border-radius:8px; position:relative; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; box-shadow:0 6px 20px rgba(0,0,0,0.6); }
-.folder .tab { position:absolute; top:-14px; left:18px; width:70px; height:30px; background:#ffd966; border-radius:6px 6px 0 0; }
-.folder .label { position:absolute; bottom:8px; left:12px; font-size:14px; color:#1e2a38; font-weight:600; }
-.hidden { display:none; }
-.app { width:760px; background:#112033; padding:20px; margin-top:20px; border-radius:10px; box-shadow:0 6px 30px rgba(0,0,0,0.6); }
-.buttons { display:flex; gap:12px; margin:12px 0; }
-button { padding:10px 16px; border-radius:8px; border:none; cursor:pointer; background:#1e88e5; color:white; font-weight:600; }
-.output { white-space:pre-wrap; margin-top:12px; background:#08131a; padding:12px; border-radius:8px; min-height:60px; }
-.manage { margin-top:12px; }
-.back { margin-top:12px; background:#6c757d; }
-select, input { padding:8px 10px; border-radius:6px; border:1px solid #233243; background:#0b1620; color:#dfe7ee; }
->>>>>>> origin/main
+body {
+  font-family: "Segoe UI", sans-serif;
+  padding: 20px;
+  background: #f7f8fa;
+  color: #222;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  border: none;
+  background-color: #4f46e5;
+  color: white;
+  border-radius: 6px;
+}
+
+button:hover {
+  background-color: #3730a3;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f3f4f6;
+  text-align: left;
+}
