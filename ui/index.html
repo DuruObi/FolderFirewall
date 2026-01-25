@@ -1,1 +1,27 @@
-<button onclick="startSession()">Start Session</button>
+<!-- ui/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FolderFirewall Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h1>FolderFirewall Dashboard</h1>
+  <button id="startBtn">Start Session</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Container</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="sessionsTable"></tbody>
+  </table>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
