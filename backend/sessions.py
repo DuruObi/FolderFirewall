@@ -1,7 +1,6 @@
 import uuid
 from datetime import datetime
 
-# In-memory session store
 SESSIONS = {}
 
 def start_session():
@@ -11,7 +10,7 @@ def start_session():
         "status": "running",
         "created_at": datetime.utcnow().isoformat(),
         "stopped_at": None,
-        "sandbox": None  # placeholder for Docker container
+        "sandbox": None
     }
     SESSIONS[session_id] = session
     return session
