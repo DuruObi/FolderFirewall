@@ -1,30 +1,39 @@
+# backend/core/session_manager.py
 import uuid
-from sandbox.docker_engine import DockerSandbox
+from datetime import datetime
+from sandbox.docker_sandbox import DockerSandbox
 
 class SessionManager:
     def __init__(self):
-        self.sessions = {}
+        self.sessions = {}  # in-memory store
         self.sandbox = DockerSandbox()
 
     def start_session(self):
         session_id = str(uuid.uuid4())
-        container_id = self.sandbox.start(session_id)
+        container = self.sandbox.start_container()
 
-        self.sessions[session_id] = {
+        session = {
+            "id": session_id,
             "status": "running",
-            "container": container_id
+            "created_at": datetime.utcnow().isoformat(),
+            "stopped_at": None,
+            "sandbox": container.id
         }
 
-        return {"session_id": session_id}
+        self.sessions[session_id] = session
+        return session
 
     def stop_session(self, session_id):
-        self.sandbox.stop(self.sessions[session_id]["container"])
-        self.sessions[session_id]["status"] = "stopped"
-        return {"status": "stopped"}
+        session = self.sessions.get(session_id)
+        if not session:
+            return None
 
-    def save_session(self, session_id):
-        self.sandbox.snapshot(self.sessions[session_id]["container"])
-        return {"status": "saved"}
+        if session.get("sandbox"):
+            self.sandbox.stop_container(session["sandbox"])
+
+        session["status"] = "stopped"
+        session["stopped_at"] = datetime.utcnow().isoformat()
+        return session
 
     def list_sessions(self):
-        return self.sessions
+        return list(self.sessions.values())
