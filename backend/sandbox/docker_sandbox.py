@@ -1,40 +1,27 @@
 # backend/sandbox/docker_sandbox.py
+
 import docker
 import uuid
+import os
 
 class DockerSandbox:
     def __init__(self):
         self.client = docker.from_env()
-        self.containers = {}
 
-    def start_container(self, image="ubuntu:22.04"):
-        container_name = f"sandbox-{uuid.uuid4().hex[:8]}"
+    def run(self, folder_path: str):
+        session_id = str(uuid.uuid4())[:8]
         container = self.client.containers.run(
-            image,
-            name=container_name,
+            "python:3.11-slim",
+            command="sleep 3600",
+            volumes={os.path.abspath(folder_path): {"bind": "/sandbox", "mode": "ro"}},
             detach=True,
-            tty=True,
-            stdin_open=True,
-            command="/bin/bash",
+            name=f"ff_{session_id}",
+            network_mode="none",
+            security_opt=["no-new-privileges"]
         )
-        self.containers[container.id] = container
-        return container.id, container_name
+        return session_id, container.id
 
-    def stop_container(self, container_id):
-        container = self.containers.get(container_id)
-        if container:
-            container.stop()
-            container.remove()
-            del self.containers[container_id]
-            return True
-        return False
-
-    def list_containers(self):
-        return [
-            {
-                "id": cid,
-                "name": cont.name,
-                "status": cont.status,
-            }
-            for cid, cont in self.containers.items()
-        ]
+    def stop(self, container_id: str):
+        container = self.client.containers.get(container_id)
+        container.stop()
+        container.remove()
