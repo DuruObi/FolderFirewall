@@ -96,3 +96,7 @@ def scan_file(file_path):
             })
             print(f"[{result['plugin']}] {result['issue']} -> {file_path}")
     return findings
+
+def quarantine_file(file_path):
+    # Move file to quarantine...
+    log_event("quarantine_file", {"file": file_path})

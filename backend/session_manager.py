@@ -1,5 +1,7 @@
 import json
 import os
+from core.audit import log_event
+import uuid
 from sandbox.docker_sandbox import DockerSandbox
 
 SESSION_FILE = os.path.expanduser("~/FolderFirewall/sessions.json")
@@ -41,3 +43,34 @@ class SessionManager:
 
     def list_sessions(self):
         return list(self.sessions.values())
+
+class SessionManager:
+    def __init__(self):
+        self.sessions = {}
+        self.sandbox = DockerSandbox()
+
+    def start_session(self, folder_path):
+        session_id = uuid.uuid4().hex[:8]
+        container_id = self.sandbox.start(folder_path)
+
+        self.sessions[session_id] = {
+            "id": session_id,
+            "folder": folder_path,
+            "container": container_id,
+            "status": "running"
+        }
+
+        # log audit event
+        log_event("start_session", {"session_id": session_id, "folder": folder_path})
+        return session_id
+
+    def stop_session(self, session_id):
+        session = self.sessions.get(session_id)
+        if not session:
+            raise Exception("Session not found")
+        self.sandbox.stop(session["container"])
+        session["status"] = "stopped"
+
+        # log audit event
+        log_event("stop_session", {"session_id": session_id})
+        return session
