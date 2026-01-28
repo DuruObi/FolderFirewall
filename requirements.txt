@@ -4,4 +4,8 @@ fastapi
 uvicorn[standard]
 python-multipart
 pydantic
+typer
+rich
+watchdog
+docker
 

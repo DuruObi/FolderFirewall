@@ -1,0 +1,6 @@
+typer
+rich
+docker
+fastapi
+uvicorn
+watchdog

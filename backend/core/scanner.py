@@ -1,30 +1,74 @@
 import os
+import hashlib
 import shutil
+import time
+from plugins.loader import load_plugins
 
-DANGEROUS_EXTENSIONS = {".exe", ".bat", ".sh", ".ps1", ".js"}
-QUARANTINE_FOLDER = os.path.expanduser("~/FolderFirewall/quarantine")
-os.makedirs(QUARANTINE_FOLDER, exist_ok=True)
+QUARANTINE_DIR = os.path.expanduser("~/FolderFirewall/quarantine")
+os.makedirs(QUARANTINE_DIR, exist_ok=True)
 
-def scan_folder(path: str, auto_block: bool = True):
-    findings = []
-    for root, _, files in os.walk(path):
-        for file in files:
-            ext = os.path.splitext(file)[1].lower()
-            full_path = os.path.join(root, file)
-            if ext in DANGEROUS_EXTENSIONS:
-                findings.append(full_path)
-                if auto_block:
-                    shutil.move(full_path, os.path.join(QUARANTINE_FOLDER, file))
-    return findings
+SUSPICIOUS_EXTENSIONS = {".sh", ".exe", ".bat", ".ps1", ".pyc"}
 
 def list_quarantine():
-    return os.listdir(QUARANTINE_FOLDER)
+    """Return list of quarantined files"""
+    try:
+        return os.listdir(QUARANTINE_DIR)
+    except FileNotFoundError:
+        return []
 
-def restore_quarantine(file_name: str, restore_path: str):
-    src = os.path.join(QUARANTINE_FOLDER, file_name)
-    dst = os.path.join(restore_path, file_name)
-    if os.path.exists(src):
-        shutil.move(src, dst)
-        return dst
-    else:
-        raise Exception(f"{file_name} not found in quarantine")
+def restore_quarantine(file_name, restore_path):
+    src = os.path.join(QUARANTINE_DIR, file_name)
+    dst = os.path.join(os.path.abspath(restore_path), file_name)
+
+    if not os.path.exists(src):
+        raise FileNotFoundError(f"{file_name} not found in quarantine")
+
+    shutil.move(src, dst)
+
+
+def file_hash(path):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(4096), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+def scan_folder(folder_path):
+    """
+    Scan a folder for suspicious files.
+    Returns a dict with scan results.
+    """
+    results = {
+        "scanned_at": time.time(),
+        "folder": os.path.abspath(folder_path),
+        "quarantined": [],
+        "hashes": {}
+    }
+
+    for root, _, files in os.walk(folder_path):
+        for name in files:
+            file_path = os.path.join(root, name)
+            ext = os.path.splitext(name)[1].lower()
+
+            try:
+                results["hashes"][file_path] = file_hash(file_path)
+            except Exception:
+                continue
+
+            if ext in SUSPICIOUS_EXTENSIONS:
+                quarantine_path = os.path.join(
+                    QUARANTINE_DIR,
+                    f"{int(time.time())}_{name}"
+                )
+                shutil.move(file_path, quarantine_path)
+                results["quarantined"].append(quarantine_path)
+
+    return results
+
+def run_plugins(file_path):
+    findings = []
+    for plugin in load_plugins():
+        result = plugin.scan(file_path)
+        if result:
+            findings.append(result)
+    return findings

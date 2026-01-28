@@ -58,5 +58,11 @@
     "status": "running",
     "container": "74ecbe58c4049d506c6241a6ff5bd584595a2cfdadf2f3866a6b8f6ed6e5ed05",
     "folder": "../untrusted_folder"
+  },
+  "07530545": {
+    "id": "07530545",
+    "folder": "/home/imma_oedx/FolderFirewall/untrusted_folder",
+    "container": "c35e7b95f763c620bef20e3ee8819e54e22eff0c80aa4ca55cd94d320f09b3ef",
+    "status": "running"
   }
 }

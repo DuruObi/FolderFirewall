@@ -1,53 +1,49 @@
 # backend/core/session_manager.py
-import os
+import uuid
 import json
-from sandbox.docker_sandbox import DockerSandbox
-from core.snapshot import snapshot_folder, compare_snapshot
+import os
+from backend.sandbox.docker_sandbox import DockerSandbox
 
-SESSION_FILE = os.path.expanduser("~/FolderFirewall/sessions.json")
-os.makedirs(os.path.dirname(SESSION_FILE), exist_ok=True)
+SESSIONS_FILE = os.path.expanduser("~/FolderFirewall/sessions.json")
 
 class SessionManager:
     def __init__(self):
         self.sandbox = DockerSandbox()
-        self.sessions = self._load_sessions()
+        self.sessions = self._load()
 
-    def _load_sessions(self):
-        if os.path.exists(SESSION_FILE):
-            with open(SESSION_FILE) as f:
+    def _load(self):
+        if os.path.exists(SESSIONS_FILE):
+            with open(SESSIONS_FILE, "r") as f:
                 return json.load(f)
         return {}
 
-    def _save_sessions(self):
-        with open(SESSION_FILE, "w") as f:
+    def _save(self):
+        os.makedirs(os.path.dirname(SESSIONS_FILE), exist_ok=True)
+        with open(SESSIONS_FILE, "w") as f:
             json.dump(self.sessions, f, indent=2)
 
-    def start_session(self, path):
-        sid, container_id = self.sandbox.run(path)
-        self.sessions[sid] = {
-            "id": sid,
-            "status": "running",
+    def start_session(self, folder_path):
+        session_id = uuid.uuid4().hex[:8]
+        container_id = self.sandbox.start(folder_path)
+
+        self.sessions[session_id] = {
+            "id": session_id,
+            "folder": os.path.abspath(folder_path),
             "container": container_id,
-            "folder": path
+            "status": "running"
         }
-        snapshot_folder(path, sid)
-        self._save_sessions()
-        return self.sessions[sid]
+        self._save()
+        return session_id
 
     def stop_session(self, session_id):
         session = self.sessions.get(session_id)
         if not session:
             raise Exception(f"Session {session_id} not found")
-        # Auto-audit on stop
-        changes = compare_snapshot(session_id, session["folder"])
-        if changes:
-            print(f"[ALERT] Suspicious changes detected during session {session_id}:")
-            for c in changes:
-                print(f" - {c}")
+
         self.sandbox.stop(session["container"])
         session["status"] = "stopped"
-        self._save_sessions()
+        self._save()
         return session
 
     def list_sessions(self):
-        return list(self.sessions.values())
+        return self.sessions

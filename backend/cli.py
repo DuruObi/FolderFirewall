@@ -4,74 +4,67 @@
 
 import typer
 from rich.console import Console
-from core.session_manager import SessionManager
-from core.scanner import scan_folder, list_quarantine, restore_quarantine
-from core.snapshot import compare_snapshot
+from backend.core.scanner import list_quarantine, restore_quarantine
+from backend.daemon import run_daemon
+from backend.core.session_manager import SessionManager
+from backend.core.scanner import scan_folder
+from backend.sandbox.docker_sandbox import DockerSandbox
 
-app = typer.Typer()
 console = Console()
+app = typer.Typer()
 manager = SessionManager()
 
 @app.command()
-def scan(path: str):
-    console.print(f"[bold cyan]Scanning:[/] {path}")
-    findings = scan_folder(path)
-    if not findings:
-        console.print("[green]✔ No suspicious files found[/]")
-    else:
-        console.print("[red]⚠ Suspicious files quarantined![/]")
-        for f in findings:
-            console.print(f" - {f}")
-
-@app.command()
-def sandbox(path: str):
-    session = manager.start_session(path)
-    console.print(f"[green]Sandbox started[/] ID: {session['id']}")
-
-@app.command()
-def audit(session_id: str, path: str):
-    changes = compare_snapshot(session_id, path)
-    if not changes:
-        console.print("[green]✔ No changes detected[/]")
-    else:
-        console.print("[red]⚠ ALERT! Suspicious changes detected![/]")
-        for c in changes:
-            console.print(f" - {c}")
+def sandbox(folder: str):
+    """Start a sandbox session"""
+    session_id = manager.start_session(folder)
+    console.print(f"[green]Sandbox started[/] ID: {session_id}")
 
 @app.command()
 def sessions():
-    s_list = manager.list_sessions()
-    if not s_list:
-        console.print("[yellow]No active sessions[/]")
+    """List all sessions"""
+    all_sessions = manager.list_sessions()
+    if not all_sessions:
+        console.print("No active sessions")
         return
-    for s in s_list:
-        console.print(f"[cyan]{s['id']}[/] | {s['status']} | {s['container']}")
+    for s in all_sessions.values():
+        console.print(f"{s['id']}: {s['status']} - {s['folder']}")
 
 @app.command()
 def stop(session_id: str):
-    session = manager.stop_session(session_id)
+    """Stop a session"""
+    manager.stop_session(session_id)
     console.print(f"[red]Stopped session[/] {session_id}")
 
 @app.command()
-def quarantine_list():
-    files = list_quarantine()
-    if not files:
-        console.print("[green]Quarantine empty[/]")
-        return
-    console.print("[red]Quarantined files:[/]")
-    for f in files:
-        console.print(f" - {f}")
-
-@app.command()
-def quarantine_restore(file_name: str, restore_path: str):
-    restored = restore_quarantine(file_name, restore_path)
-    console.print(f"[green]Restored:[/] {restored}")
+def save(session_id: str):
+    """Save session snapshot"""
+    manager.save_session(session_id)
+    console.print(f"[green]Snapshot saved[/] {session_id}")
 
 @app.command()
 def daemon(session_id: str, folder: str):
-    """Run a fully autonomous folder firewall daemon"""
-    from backend.daemon import run_daemon
+    """Start the monitoring daemon"""
     run_daemon(session_id, folder)
+
+@app.command()
+def list_quarantine_cmd():
+    """List quarantined files"""
+    files = list_quarantine()
+    if not files:
+        console.print("No quarantined files")
+    else:
+        for f in files:
+            console.print(f"[red]{f}[/]")
+
+@app.command()
+def restore(file_name: str, restore_path: str):
+    """Restore a quarantined file"""
+    try:
+        restore_quarantine(file_name, restore_path)
+        console.print(f"[green]Restored[/] {file_name}")
+    except FileNotFoundError as e:
+        console.print(f"[red]{e}[/]")
 
 if __name__ == "__main__":
     app()
