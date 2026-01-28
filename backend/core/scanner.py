@@ -3,6 +3,12 @@ import hashlib
 import shutil
 import time
 from plugins.loader import load_plugins
+from core.scanner import scan_file
+
+folder = "./untrusted_folder"
+for root, _, files in os.walk(folder):
+    for f in files:
+        scan_file(os.path.join(root, f))
 
 QUARANTINE_DIR = os.path.expanduser("~/FolderFirewall/quarantine")
 os.makedirs(QUARANTINE_DIR, exist_ok=True)
@@ -71,4 +77,10 @@ def run_plugins(file_path):
         result = plugin.scan(file_path)
         if result:
             findings.append(result)
+    return findings
+
+def scan_file(file_path):
+    findings = run_plugins(file_path)
+    for result in findings:
+        print(f"[{result['plugin']}] {result['issue']} -> {file_path}")
     return findings
