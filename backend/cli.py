@@ -4,15 +4,26 @@
 
 import typer
 from rich.console import Console
-from backend.core.scanner import list_quarantine, restore_quarantine
+from core.scanner import list_quarantine, restore_quarantine
 from backend.daemon import run_daemon
 from backend.core.session_manager import SessionManager
 from backend.core.scanner import scan_folder
 from backend.sandbox.docker_sandbox import DockerSandbox
+from core.alerts import watch_audit_log
+import sys
+from pathlib import Path
+
+# Add project root to sys.path
+sys.path.append(str(Path(__file__).parent.parent.resolve()))
 
 console = Console()
 app = typer.Typer()
 manager = SessionManager()
+
+@app.command()
+def alerts():
+    """Start the real-time alert watcher"""
+    watch_audit_log()
 
 @app.command()
 def sandbox(folder: str):
