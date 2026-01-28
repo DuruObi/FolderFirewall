@@ -1,9 +1,9 @@
-import os
 import hashlib
 import shutil
 import time
 from plugins.loader import load_plugins
-from core.scanner import scan_file
+import os
+from core.audit import log_event
 
 folder = "./untrusted_folder"
 for root, _, files in os.walk(folder):
@@ -83,4 +83,16 @@ def scan_file(file_path):
     findings = run_plugins(file_path)
     for result in findings:
         print(f"[{result['plugin']}] {result['issue']} -> {file_path}")
+    return findings
+
+def scan_file(file_path):
+    findings = run_plugins(file_path)
+    if findings:
+        for result in findings:
+            log_event("scan_alert", {
+                "file": file_path,
+                "plugin": result["plugin"],
+                "issue": result["issue"]
+            })
+            print(f"[{result['plugin']}] {result['issue']} -> {file_path}")
     return findings
