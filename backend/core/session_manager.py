@@ -2,6 +2,7 @@
 import uuid
 import json
 import os
+from core.hashes import snapshot_folder
 from core.audit import log_event
 from backend.sandbox.docker_sandbox import DockerSandbox
 
@@ -101,4 +102,39 @@ class SessionManager:
         session = self.sessions.get(session_id)
         if not session:
             raise Exception(f"Session {session_id} not found")
+        return session
+
+class SessionManager:
+    ...
+    def start_session(self, folder_path: str):
+        session_id = uuid.uuid4().hex[:8]
+        container_id = self.sandbox.start(folder_path)
+        
+        # Take initial hash snapshot
+        file_hashes = snapshot_folder(folder_path)
+        log_event("session_start_hashes", {"session_id": session_id, "hashes": file_hashes})
+        
+        self.sessions[session_id] = {
+            "id": session_id,
+            "folder": folder_path,
+            "container": container_id,
+            "status": "running",
+            "hashes": file_hashes,
+        }
+        return session_id
+
+    def stop_session(self, session_id: str):
+        session = self.sessions.get(session_id)
+        if not session:
+            raise Exception("Session not found")
+        
+        # Take final hash snapshot and compare
+        final_hashes = snapshot_folder(session["folder"])
+        for path, h in final_hashes.items():
+            old_hash = session["hashes"].get(path)
+            if old_hash != h:
+                log_event("file_modified", {"session_id": session_id, "file": path})
+        
+        self.sandbox.stop(session["container"])
+        session["status"] = "stopped"
         return session
