@@ -1,6 +1,4 @@
-typer
-rich
 docker
-fastapi
-uvicorn
+rich
+typer
 watchdog
