@@ -1,8 +1,8 @@
-# backend/plugins/loader.py
+# folderfirewall/plugins/loader.py
 
 import importlib
 import pkgutil
-from plugins.base import Plugin
+from folderfirewall.plugins.base import Plugin
 import os
 
 # Set the package path explicitly

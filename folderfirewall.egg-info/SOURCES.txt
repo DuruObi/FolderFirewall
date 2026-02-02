@@ -24,6 +24,7 @@ folderfirewall/core/session_manager.py
 folderfirewall/core/session_store.py
 folderfirewall/core/snapshot.py
 folderfirewall/core/sandbox/__init__.py
+folderfirewall/core/sandbox/docker_sandbox.py
 folderfirewall/plugins/__init__.py
 folderfirewall/plugins/base.py
 folderfirewall/plugins/entropy.py

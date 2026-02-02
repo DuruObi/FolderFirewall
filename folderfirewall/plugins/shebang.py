@@ -1,6 +1,6 @@
-# backend/plugins/shebang.py
+# folderfirewall/plugins/shebang.py
 
-from plugins.base import Plugin
+from folderfirewall.plugins.base import Plugin
 
 class ShebangScanner(Plugin):
     name = "shebang"

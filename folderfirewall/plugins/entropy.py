@@ -1,7 +1,7 @@
-# backend/plugins/entropy.py
+# folderfirewall/plugins/entropy.py
 
 import math
-from plugins.base import Plugin
+from folderfirewall.plugins.base import Plugin
 
 class EntropyScanner(Plugin):
     name = "entropy"

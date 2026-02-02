@@ -1,7 +1,7 @@
 import hashlib
 import shutil
 import time
-from plugins.loader import load_plugins
+from folderfirewall.plugins.loader import load_plugins
 import os
 from folderfirewall.core.audit import log_event
 
